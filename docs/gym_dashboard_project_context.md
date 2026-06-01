@@ -114,6 +114,15 @@ El alcance actual no incluye:
 
 # Alcance del Sistema
 
+## Recepción (Acceso Rápido)
+
+El sistema debe soportar un flujo de validación simplificado y veloz:
+
+- ingreso de código único por parte del cliente al llegar
+- confirmación instantánea en pantalla de si el código es correcto
+- visualización de datos personales del cliente
+- visualización de detalles de la membresía (tipo de plan, fechas de inicio y vencimiento, estado del pago)
+
 ## Gestión de Clientes
 
 El sistema debe soportar:
@@ -162,12 +171,12 @@ El sistema debe soportar:
 
 PLas siguientes categorías de membresía se identificaron basándose en la lista oficial de precios:
 
-- General Asistencia todo el mes (Turno Mañana) - 1 Persona
-- General Asistencia todo el mes (Turno Tarde) - 1 Persona
-- General Asistencia todo el mes (Turno Noche) - 1 Persona
-- Familiar Asistencia todo el mes (Turno libre) - 3 Personas o más
-- Sesión por Día (Turno libre) - 1 Persona
-- Plata 2 Meses (Turno libre) - 1 Persona
+- General Asistencia todo el mes (Turno Mañana: 6am-1pm) - 1 Persona - Precio: 100 bs
+- General Asistencia todo el mes (Turno Tarde: 2pm-6pm) - 1 Persona - Precio: 100 bs
+- General Asistencia todo el mes (Turno Noche: 7pm-12pm) - 1 Persona - Precio: 120 bs
+- Familiar Asistencia todo el mes (Turno libre) - 3 Personas o más - Precio: 90 bs
+- Sesión por Día (Turno libre) - 1 Persona - Precio: 10 bs
+- Plata 2 Meses (Turno libre) - 1 Persona - Precio: 190 bs
 
 ---
 

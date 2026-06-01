@@ -2,22 +2,20 @@
 
 ## Fase 1: Preparación y definición (pre-UI)
 
-- [ ] Revisar objetivos y flujos principales del proyecto.
-- [ ] Documentar los casos de uso clave (recepción, registro, membresías, asistencia, pagos).
-- [ ] Definir entidades centrales: Clientes, Planes, Membresías, Asistencia, Pagos.
-- [ ] Especificar reglas de membresía (turnos, duraciones, planes familiares/grupales).
-- [ ] Preparar el esquema de datos preliminar.
-- [ ] Definir el contrato frontend/backend.
-- [ ] Configurar el entorno inicial de Supabase.
+- [x] Revisar objetivos y flujos principales del proyecto.
+- [x] Documentar los casos de uso clave (recepción, registro, membresías, asistencia, pagos).
+- [x] Definir entidades centrales: Clientes, Planes, Membresías, Asistencia, Pagos.
+- [x] Especificar reglas de membresía (turnos, duraciones, planes familiares/grupales).
+- [x] Preparar el esquema de datos preliminar.
+- [x] Definir el contrato frontend/backend.
+- [x] Configurar el entorno inicial de Supabase.
 
 ## Fase 1.5: Configuración Técnica Base (Setup Frontend)
 
 - [x] Inicializar el proyecto con Vite y React.
-- [ ] Instalar dependencias de Tailwind CSS (`npm install -D tailwindcss postcss autoprefixer`).
-- [ ] Generar los archivos de configuración (`npx tailwindcss init -p`).
-- [ ] Configurar las rutas de los archivos en el array `content` de `tailwind.config.js`.
-- [ ] Añadir las directivas `@tailwind` al archivo CSS global (`index.css`).
-- [ ] Limpiar el código boilerplate generado por Vite (eliminar logos, limpiar `App.jsx` y `App.css`).
+- [x] Instalar Tailwind CSS usando el plugin de Vite (`@tailwindcss/vite`).
+- [x] Añadir la directiva de Tailwind al archivo CSS global (`@import "tailwindcss";` en `index.css`).
+- [x] Limpiar el código boilerplate generado por Vite (eliminar logos, limpiar `App.jsx` y `App.css`).
 - [ ] Instalar dependencias base adicionales (ej. `react-router-dom` para rutas, `lucide-react` para iconos).
 
 ## Fase 2: Diseño de UI y validación con Gemini CLI
