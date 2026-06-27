@@ -33,7 +33,7 @@ export default function MainLayout() {
       {/* Sidebar / Menú Lateral */}
       <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
         <div className="p-6 center flex flex-col items-center">
-          <img src="../../public/favicon.png" alt="Favicon" />
+          <img src="/favicon.png" alt="Favicon" />
           <h1 className="text-2xl font-bold text-[#1a6b32] tracking-tight">
             GymC3
           </h1>
