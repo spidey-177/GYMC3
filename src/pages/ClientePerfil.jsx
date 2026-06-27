@@ -363,7 +363,7 @@ const ModalEditarPerfil = ({ cliente, onClose, onSuccess }) => {
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-gray-700">Nombre(s) *</label>
               <Input icon={User} name="nombre" required maxLength={60} value={form.nombre} onChange={handleChange} />

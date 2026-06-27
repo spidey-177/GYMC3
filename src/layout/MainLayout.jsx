@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -6,22 +7,22 @@ import {
   Dumbbell,
   ClockAlert,
   LogOut,
+  Menu,
+  X,
 } from "lucide-react";
 import { supabase } from "../lib/supabase";
 
 export default function MainLayout() {
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/login", { replace: true });
   };
+
   const navItems = [
-    {
-      to: "/dashboard",
-      icon: <LayoutDashboard size={20} />,
-      label: "Dashboard",
-    },
+    { to: "/dashboard", icon: <LayoutDashboard size={20} />, label: "Dashboard" },
     { to: "/recepcion", icon: <ScanLine size={20} />, label: "Recepción" },
     { to: "/clientes", icon: <Users size={20} />, label: "Clientes" },
     { to: "/planes", icon: <Dumbbell size={20} />, label: "Planes" },
@@ -30,13 +31,35 @@ export default function MainLayout() {
 
   return (
     <div className="flex h-screen bg-gray-50 text-gray-800 font-sans">
-      {/* Sidebar / Menú Lateral */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
-        <div className="p-6 center flex flex-col items-center">
-          <img src="/favicon.png" alt="Favicon" />
-          <h1 className="text-2xl font-bold text-[#1a6b32] tracking-tight">
-            GymC3
-          </h1>
+
+      {/* ── OVERLAY (móvil) ── */}
+      {sidebarOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-40 bg-black/40"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* ── SIDEBAR ── */}
+      <aside
+        className={`
+          fixed lg:static inset-y-0 left-0 z-50
+          w-64 bg-white border-r border-gray-200 flex flex-col
+          transition-transform duration-200
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+          lg:translate-x-0
+        `}
+      >
+        {/* Logo + botón cerrar (solo móvil) */}
+        <div className="p-6 flex flex-col items-center relative">
+          <button
+            className="lg:hidden absolute top-4 right-4 text-gray-400 hover:text-gray-700"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <X size={20} />
+          </button>
+          <img src="/favicon.png" alt="GymC3" className="w-12 h-12 object-contain" />
+          <h1 className="text-2xl font-bold text-[#1a6b32] tracking-tight mt-1">GymC3</h1>
           <p className="text-xs text-gray-500 mt-1">Control y Recepción</p>
         </div>
 
@@ -45,6 +68,7 @@ export default function MainLayout() {
             <NavLink
               key={item.to}
               to={item.to}
+              onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                   isActive
@@ -59,7 +83,6 @@ export default function MainLayout() {
           ))}
         </nav>
 
-        {/* Cerrar sesión */}
         <div className="p-4 border-t border-gray-100">
           <button
             onClick={handleLogout}
@@ -71,10 +94,25 @@ export default function MainLayout() {
         </div>
       </aside>
 
-      {/* Área de contenido principal (Aquí se renderizan las páginas) */}
-      <main className="flex-1 overflow-y-auto">
-        <Outlet />
-      </main>
+      {/* ── ÁREA PRINCIPAL ── */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+
+        {/* Top bar móvil */}
+        <header className="lg:hidden flex items-center gap-3 px-4 py-3 bg-white border-b border-gray-200 shrink-0">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="text-gray-600 hover:text-gray-900"
+          >
+            <Menu size={22} />
+          </button>
+          <img src="/favicon.png" alt="GymC3" className="w-7 h-7 object-contain" />
+          <span className="font-bold text-[#1a6b32] text-lg">GymC3</span>
+        </header>
+
+        <main className="flex-1 overflow-y-auto">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }
