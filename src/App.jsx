@@ -1,21 +1,38 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "./assets/vite.svg";
-import heroImg from "./assets/hero.png";
-import "./App.css";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import MainLayout from "./layout/MainLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import Recepcion from "./pages/Recepcion";
+import Clientes from "./pages/Clientes";
+import NuevoCliente from "./pages/NuevoCliente";
+import ClientePerfil from "./pages/ClientePerfil";
+import Planes from "./pages/Planes";
+import NuevoPlan from "./pages/NuevoPlan";
+import Asistencia from "./pages/Asistencia";
 
-function App() {
-  const [count, setCount] = useState(0);
-
+export default function App() {
   return (
-    <>
-      <div className="flex min-h-screen items-center justify-center bg-slate-900">
-        <h1 className="text-4xl font-bold text-sky-400 underline">
-          ¡Tailwind v4 + Vite + React funcionando!
-        </h1>
-      </div>
-    </>
+    <BrowserRouter>
+      <Routes>
+        {/* Ruta pública: login sin layout */}
+        <Route path="/login" element={<Login />} />
+
+        {/* Rutas protegidas: ProtectedRoute verifica sesión antes de renderizar */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<MainLayout />}>
+            <Route index element={<Navigate to="/recepcion" replace />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="recepcion" element={<Recepcion />} />
+            <Route path="clientes" element={<Clientes />} />
+            <Route path="clientes/nuevo" element={<NuevoCliente />} />
+            <Route path="clientes/:id" element={<ClientePerfil />} />
+            <Route path="planes" element={<Planes />} />
+            <Route path="planes/nuevo" element={<NuevoPlan />} />
+            <Route path="asistencia" element={<Asistencia />} />
+          </Route>
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;

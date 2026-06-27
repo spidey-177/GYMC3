@@ -1,0 +1,258 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --c3-green: #3db D06;
+  --c3-accent: #2ea84a;
+  --c3-accent-bg: #edf7f0;
+  --c3-accent-text: #1a6b32;
+  --sidebar-w: 216px;
+}
+.app { display: flex; height: 620px; background: #f5f5f3; font-family: var(--font-sans); font-size: 14px; }
+
+.sidebar { width: var(--sidebar-w); flex-shrink: 0; background: #ffffff; border-right: 0.5px solid #e5e5e3; display: flex; flex-direction: column; padding: 18px 0; }
+.sidebar-logo { padding: 0 18px 22px; display: flex; align-items: center; gap: 9px; }
+.logo-mark { width: 30px; height: 30px; border-radius: 8px; background: #111; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.logo-mark span { color: #2ea84a; font-size: 13px; font-weight: 500; letter-spacing: -0.5px; }
+.logo-text { line-height: 1.2; }
+.logo-name { font-size: 13px; font-weight: 500; color: #111; }
+.logo-sub { font-size: 11px; color: #999; }
+
+.nav-group { padding: 0 10px; margin-bottom: 2px; }
+.nav-section-label { font-size: 10.5px; color: #bbb; padding: 10px 8px 4px; letter-spacing: 0.05em; text-transform: uppercase; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 7px 10px; border-radius: 7px; font-size: 13.5px; color: #555; cursor: pointer; margin-bottom: 1px; }
+.nav-item i { font-size: 17px; color: #999; }
+.nav-item:hover { background: #f5f5f3; color: #111; }
+.nav-item:hover i { color: #555; }
+.nav-item.active { background: #edf7f0; color: #1a6b32; font-weight: 500; }
+.nav-item.active i { color: #2ea84a; }
+.nav-dot { width: 5px; height: 5px; border-radius: 50%; background: #2ea84a; margin-left: auto; }
+
+.sidebar-footer { margin-top: auto; padding: 0 10px; border-top: 0.5px solid #f0f0ee; padding-top: 12px; }
+
+.main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-width: 0; }
+.topbar { height: 52px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; background: #fff; border-bottom: 0.5px solid #e5e5e3; flex-shrink: 0; }
+.topbar-left { display: flex; flex-direction: column; gap: 1px; }
+.topbar-title { font-size: 14px; font-weight: 500; color: #111; }
+.topbar-date { font-size: 11.5px; color: #aaa; }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
+.topbar-badge { background: #edf7f0; color: #1a6b32; font-size: 11.5px; padding: 3px 9px; border-radius: 999px; font-weight: 500; border: 0.5px solid #c5e8ce; }
+
+.content { padding: 20px 24px; flex: 1; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
+.stat-card { background: #fff; border: 0.5px solid #e8e8e6; border-radius: 10px; padding: 14px 16px; }
+.stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.stat-label { font-size: 12px; color: #999; }
+.stat-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+.stat-icon i { font-size: 15px; }
+.si-green { background: #edf7f0; } .si-green i { color: #2ea84a; }
+.si-blue { background: #e8f1fb; } .si-blue i { color: #2563b0; }
+.si-amber { background: #fef3e2; } .si-amber i { color: #b45309; }
+.si-red { background: #fef2f2; } .si-red i { color: #b91c1c; }
+.stat-value { font-size: 28px; font-weight: 500; color: #111; line-height: 1; }
+.stat-sub { font-size: 11.5px; color: #bbb; margin-top: 4px; }
+.stat-bar { height: 3px; border-radius: 999px; background: #f0f0ee; margin-top: 10px; overflow: hidden; }
+.stat-bar-fill { height: 100%; border-radius: 999px; }
+.fill-green { background: #2ea84a; }
+.fill-blue { background: #2563b0; }
+.fill-amber { background: #d97706; }
+.fill-red { background: #dc2626; }
+
+.bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.panel { background: #fff; border: 0.5px solid #e8e8e6; border-radius: 10px; padding: 16px 18px; }
+.panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.panel-title { font-size: 13px; font-weight: 500; color: #111; }
+.panel-action { font-size: 12px; color: #bbb; display: flex; align-items: center; gap: 3px; cursor: pointer; }
+.panel-action:hover { color: #2ea84a; }
+
+.alert-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid #f3f3f1; }
+.alert-row:last-child { border-bottom: none; }
+.alert-avatar { width: 28px; height: 28px; border-radius: 50%; background: #f5f5f3; display: flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 500; color: #666; flex-shrink: 0; }
+.alert-info { flex: 1; min-width: 0; }
+.alert-name { font-size: 12.5px; font-weight: 500; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.alert-plan { font-size: 11px; color: #bbb; }
+.badge { font-size: 10.5px; padding: 2px 7px; border-radius: 999px; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
+.badge-amber { background: #fef3e2; color: #92400e; border: 0.5px solid #fde68a; }
+.badge-red { background: #fef2f2; color: #991b1b; border: 0.5px solid #fecaca; }
+.badge-green { background: #edf7f0; color: #1a6b32; border: 0.5px solid #c5e8ce; }
+
+.access-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid #f3f3f1; }
+.access-row:last-child { border-bottom: none; }
+.access-avatar { width: 28px; height: 28px; border-radius: 50%; background: #edf7f0; display: flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 500; color: #1a6b32; flex-shrink: 0; }
+.access-avatar.denied { background: #fef2f2; color: #991b1b; }
+.access-name { font-size: 12.5px; color: #222; flex: 1; }
+.access-meta { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.access-time { font-size: 11px; color: #bbb; }
+.dot { width: 6px; height: 6px; border-radius: 50%; }
+.dot-green { background: #2ea84a; }
+.dot-red { background: #dc2626; }
+</style>
+
+<h2 class="sr-only">C3 Gym — Panel principal con estadísticas, alertas de vencimiento y últimos accesos del día</h2>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark"><span>C3</span></div>
+      <div class="logo-text">
+        <div class="logo-name">C3 Gym</div>
+        <div class="logo-sub">Fitness & Aerodance</div>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-item active">
+        <i class="ti ti-layout-dashboard" aria-hidden="true"></i> Dashboard
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item">
+        <i class="ti ti-scan" aria-hidden="true"></i> Recepción
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-section-label">Gestión</div>
+      <div class="nav-item"><i class="ti ti-users" aria-hidden="true"></i> Clientes</div>
+      <div class="nav-item"><i class="ti ti-id-badge" aria-hidden="true"></i> Planes</div>
+      <div class="nav-item"><i class="ti ti-clock-record" aria-hidden="true"></i> Asistencia</div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="nav-item"><i class="ti ti-settings" aria-hidden="true"></i> Configuración</div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <span class="topbar-title">Buen día 👋</span>
+        <span class="topbar-date">Lunes, 2 de junio · Turno mañana activo</span>
+      </div>
+      <div class="topbar-right">
+        <span class="topbar-badge"><i class="ti ti-wifi" style="font-size:12px;vertical-align:-1px" aria-hidden="true"></i> En línea</span>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-top">
+            <span class="stat-label">Clientes activos</span>
+            <div class="stat-icon si-green"><i class="ti ti-users" aria-hidden="true"></i></div>
+          </div>
+          <div class="stat-value">84</div>
+          <div class="stat-sub">socios registrados</div>
+          <div class="stat-bar"><div class="stat-bar-fill fill-green" style="width:84%"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-top">
+            <span class="stat-label">Asistencias hoy</span>
+            <div class="stat-icon si-blue"><i class="ti ti-door-enter" aria-hidden="true"></i></div>
+          </div>
+          <div class="stat-value">23</div>
+          <div class="stat-sub">ingresos del día</div>
+          <div class="stat-bar"><div class="stat-bar-fill fill-blue" style="width:55%"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-top">
+            <span class="stat-label">Por vencer</span>
+            <div class="stat-icon si-amber"><i class="ti ti-clock-exclamation" aria-hidden="true"></i></div>
+          </div>
+          <div class="stat-value">7</div>
+          <div class="stat-sub">próximos 5 días</div>
+          <div class="stat-bar"><div class="stat-bar-fill fill-amber" style="width:35%"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-top">
+            <span class="stat-label">Vencidas</span>
+            <div class="stat-icon si-red"><i class="ti ti-calendar-off" aria-hidden="true"></i></div>
+          </div>
+          <div class="stat-value">12</div>
+          <div class="stat-sub">membresías expiradas</div>
+          <div class="stat-bar"><div class="stat-bar-fill fill-red" style="width:25%"></div></div>
+        </div>
+      </div>
+
+      <div class="bottom-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Alertas de vencimiento</span>
+            <span class="panel-action">Ver todas <i class="ti ti-arrow-right" aria-hidden="true"></i></span>
+          </div>
+          <div class="alert-row">
+            <div class="alert-avatar">CM</div>
+            <div class="alert-info">
+              <div class="alert-name">Carlos Mamani</div>
+              <div class="alert-plan">General Mañana · 0041</div>
+            </div>
+            <span class="badge badge-amber">2 días</span>
+          </div>
+          <div class="alert-row">
+            <div class="alert-avatar">LT</div>
+            <div class="alert-info">
+              <div class="alert-name">Luisa Torrico</div>
+              <div class="alert-plan">Plan Plata · 0078</div>
+            </div>
+            <span class="badge badge-amber">3 días</span>
+          </div>
+          <div class="alert-row">
+            <div class="alert-avatar">FQ</div>
+            <div class="alert-info">
+              <div class="alert-name">Familia Quispe</div>
+              <div class="alert-plan">Familiar Libre · 0019</div>
+            </div>
+            <span class="badge badge-red">Vencida</span>
+          </div>
+          <div class="alert-row">
+            <div class="alert-avatar">JF</div>
+            <div class="alert-info">
+              <div class="alert-name">Jorge Flores</div>
+              <div class="alert-plan">General Noche · 0055</div>
+            </div>
+            <span class="badge badge-red">Vencida</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Últimos accesos</span>
+            <span class="panel-action">Ver historial <i class="ti ti-arrow-right" aria-hidden="true"></i></span>
+          </div>
+          <div class="access-row">
+            <div class="access-avatar">CM</div>
+            <span class="access-name">Carlos Mamani</span>
+            <div class="access-meta">
+              <span class="access-time">08:14</span>
+              <div class="dot dot-green" aria-label="Permitido"></div>
+            </div>
+          </div>
+          <div class="access-row">
+            <div class="access-avatar">LT</div>
+            <span class="access-name">Luisa Torrico</span>
+            <div class="access-meta">
+              <span class="access-time">08:31</span>
+              <div class="dot dot-green" aria-label="Permitido"></div>
+            </div>
+          </div>
+          <div class="access-row">
+            <div class="access-avatar denied">JF</div>
+            <span class="access-name">Jorge Flores</span>
+            <div class="access-meta">
+              <span class="access-time">09:02</span>
+              <div class="dot dot-red" aria-label="Denegado"></div>
+            </div>
+          </div>
+          <div class="access-row">
+            <div class="access-avatar">MR</div>
+            <span class="access-name">María Rojas</span>
+            <div class="access-meta">
+              <span class="access-time">09:18</span>
+              <div class="dot dot-green" aria-label="Permitido"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

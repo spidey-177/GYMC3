@@ -1,93 +1,79 @@
 # Gym Dashboard — Checklist de Tareas
 
-## Fase 1: Preparación y definición (pre-UI)
+## Fase 1: Preparación y definición
 
 - [x] Revisar objetivos y flujos principales del proyecto.
 - [x] Documentar los casos de uso clave (recepción, registro, membresías, asistencia, pagos).
 - [x] Definir entidades centrales: Clientes, Planes, Membresías, Asistencia, Pagos.
 - [x] Especificar reglas de membresía (turnos, duraciones, planes familiares/grupales).
 - [x] Preparar el esquema de datos preliminar.
-- [x] Definir el contrato frontend/backend.
-- [x] Configurar el entorno inicial de Supabase.
+- [x] Definir el contrato frontend/backend (`docs/database.md` V3).
 
-## Fase 1.5: Configuración Técnica Base (Setup Frontend)
+## Fase 1.5: Configuración técnica base
 
-- [x] Inicializar el proyecto con Vite y React.
-- [x] Instalar Tailwind CSS usando el plugin de Vite (`@tailwindcss/vite`).
-- [x] Añadir la directiva de Tailwind al archivo CSS global (`@import "tailwindcss";` en `index.css`).
-- [x] Limpiar el código boilerplate generado por Vite (eliminar logos, limpiar `App.jsx` y `App.css`).
-- [ ] Instalar dependencias base adicionales (ej. `react-router-dom` para rutas, `lucide-react` para iconos).
+- [x] Inicializar el proyecto con Vite + React.
+- [x] Instalar Tailwind CSS (`@tailwindcss/vite`).
+- [x] Instalar dependencias base: `react-router-dom`, `lucide-react`, `@supabase/supabase-js`.
+- [x] Limpiar boilerplate de Vite.
 
-## Fase 2: Diseño de UI y validación con Gemini CLI
+## Fase 2: Diseño y validación de UI
 
-- [ ] Generar prototipos con Gemini CLI y skill de diseño.
-- [ ] Crear la pantalla de búsqueda/consulta de cliente.
-- [ ] Crear la ficha de cliente con estado de membresía.
-- [ ] Crear el formulario de registro de asistencia.
-- [ ] Crear el formulario de alta de cliente.
-- [ ] Crear selección/asignación de plan.
-- [ ] Crear registro de pago e historial.
-- [ ] Validar la experiencia de recepción antes de codificar lógica.
-- [ ] Ajustar la UI según feedback.
-- [ ] Confirmar que la UI cubre todos los flujos clave.
+- [x] Crear pantalla de Recepción / Control de Acceso.
+- [x] Crear ficha de cliente (`ClientePerfil`) con estado de membresía.
+- [x] Crear formulario de alta de cliente (`NuevoCliente`) con flujo multi-paso.
+- [x] Crear listado de clientes (`Clientes`) con búsqueda y filtros.
+- [x] Crear catálogo de planes (`Planes`) y formulario de nuevo plan (`NuevoPlan`).
+- [x] Crear historial de asistencias (`Asistencia`).
+- [x] Crear Dashboard con tarjetas de estadísticas.
+- [x] Implementar `MainLayout` con sidebar de navegación.
+- [x] Crear librería de componentes UI reutilizables (`src/ui/`, `src/components/`).
+- [x] Añadir modales: Renovar Membresía, Cambiar Plan (con soporte plan familiar), Editar Perfil.
+- [x] Añadir botón Suspender / Reactivar cliente.
+- [x] Corregir bug: estado financiero "pendiente" en tarjeta de Recepción.
 
-## Fase 3: Diseño de backend y datos (antes de implementar lógica)
+## Fase 3: Backend — Supabase
 
-- [ ] Definir tablas y campos en Supabase.
-- [ ] Establecer relaciones entre clientes, membresías, planes, asistencia y pagos.
-- [ ] Añadir validaciones de integridad de datos.
-- [ ] Definir los endpoints y consultas necesarios.
-- [ ] Verificar que el modelo soporte los tipos de membresía identificados.
+- [x] Crear proyecto en Supabase y configurar `.env.local` con `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`.
+- [x] Ejecutar schema SQL en Supabase SQL Editor (6 tablas: `clientes`, `planes`, `membresias`, `beneficiarios_membresia`, `asistencias`, `pagos`).
+- [x] Configurar RLS: habilitar en las 6 tablas y crear políticas para rol `authenticated`.
+- [x] Crear usuario administrador en Supabase Auth y desactivar sign-ups públicos.
+- [x] Crear cliente Supabase (`src/lib/supabase.js`).
+- [x] Crear capa de servicios (`src/services/`): `clientes.js`, `planes.js`, `membresias.js`, `asistencias.js`, `pagos.js`.
+- [x] Crear hook `useAuth` y componente `ProtectedRoute`.
+- [x] Crear página de Login conectada a Supabase Auth.
+- [x] Proteger todas las rutas con `ProtectedRoute` en `App.jsx`.
+- [x] Añadir botón "Cerrar sesión" en `MainLayout`.
 
-## Fase 4: Implementación frontend basado en UI validada
+## Fase 4: Conexión frontend ↔ Supabase (reemplazar mocks)
 
-- [ ] Crear la estructura de páginas y rutas en React.
-- [ ] Implementar componentes visuales con Tailwind.
-- [ ] Implementar la vista de cliente y fichas de membresía.
-- [ ] Implementar la vista de registro de asistencia.
-- [ ] Implementar la vista de pagos y renovaciones.
-- [ ] Integrar navegación y estados visuales.
-- [ ] Verificar que la UI refleje la experiencia validada.
+- [x] **Recepción:** reemplazar `simularRespuesta()` con `processAccess()` del servicio.
+- [x] **Clientes:** reemplazar `MOCK_CLIENTES` con `getClientesConPlan()`.
+- [x] **NuevoCliente:** conectar submit a `createCliente()` + `createMembresia()` + `registrarPago()`.
+- [x] **ClientePerfil:** conectar con `getClienteById()`, `getMembresiaByTitular()`, `getBeneficiariosByMembresia()`, `getAsistenciasByCliente()`.
+- [x] **ClientePerfil — Editar Perfil:** conectar `ModalEditarPerfil` a `updateCliente()`.
+- [x] **ClientePerfil — Suspender/Reactivar:** conectar a `updateEstadoCuenta()`.
+- [x] **ClientePerfil — Renovar Membresía:** conectar a `renovarMembresia()` + `registrarPago()`.
+- [x] **ClientePerfil — Cambiar Plan:** conectar a `cambiarPlan()`.
+- [x] **Planes:** reemplazar `MOCK_PLANES` con `getPlanes()`. Botón Eliminar conectado a `deletePlan()`.
+- [x] **NuevoPlan:** conectar submit a `createPlan()`.
+- [x] **Asistencia:** reemplazar `MOCK_ASISTENCIAS` con `getAsistencias()` con filtros reales de fecha.
+- [x] **Dashboard:** conectar tarjetas de estadísticas con `getDashboardStats()` (`src/services/dashboard.js`).
 
-## Fase 5: Lógica de negocio y conexión con backend (post-UI)
+## Fase 5: Refinamiento y reglas de negocio
 
-- [ ] Implementar validación de acceso según turno.
-- [ ] Implementar estado activo/inactivo de membresías.
-- [ ] Implementar validación de vigencia y fechas.
-- [ ] Conectar el frontend con Supabase y la API.
-- [ ] Implementar registro real de asistencia.
-- [ ] Implementar registro y seguimiento de pagos.
-- [ ] Implementar gestión de renovación y cambio de plan.
-- [ ] Implementar reglas para planes familiares/grupales.
+- [x] Validar que `NuevoCliente` verifique `capacidad_minima` antes de crear membresía familiar.
+- [x] Implementar generación automática de `codigo_unico` al registrar cliente.
+- [x] Validar que un cliente no tenga dos membresías activas simultáneas.
+- [x] Implementar paginación real en Clientes y Asistencia (actualmente hardcodeada).
+- [x] Implementar filtros reales por fecha en Asistencia.
+- [x] Implementar filtro por plan en listado de Clientes.
+- [x] Reemplazar `processAccess` por un RPC de Supabase para que sea atómico.
 
-## Fase 6: Pruebas y ajuste final
+## Fase 6: Pruebas y despliegue
 
-- [ ] Probar el flujo de acceso rápido en recepción.
-- [ ] Probar el registro de cliente y asignación de plan.
-- [ ] Probar pagos y renovaciones.
-- [ ] Revisar la consistencia de datos en Supabase.
-- [ ] Ajustar UI/UX según resultados.
-- [ ] Preparar el despliegue MVP.
-
-## Módulos principales
-
-- [ ] Recepción / Acceso rápido
-- [ ] Gestión de clientes
-- [ ] Gestión de membresías y planes
-- [ ] Registro de asistencia
-- [ ] Historial de pagos
-- [ ] Configuración de turnos y vigencias
-
-## Antes de la interfaz
-
-- [ ] Definir flujos y casos de uso.
-- [ ] Crear modelo de datos y reglas.
-- [ ] Preparar el contrato frontend/backend.
-- [ ] Configurar Supabase.
-
-## Después de validar la interfaz
-
-- [ ] Implementar UI en React/Tailwind.
-- [ ] Conectar con Supabase/backend.
-- [ ] Añadir lógica de negocio.
-- [ ] Probar flujos completos.
+- [ ] Probar flujo completo de recepción con clientes reales.
+- [ ] Probar registro de cliente individual y plan familiar.
+- [ ] Probar renovación y cambio de plan.
+- [ ] Probar suspensión y reactivación de cuenta.
+- [ ] Revisar consistencia de datos en Supabase (Table Editor).
+- [ ] Preparar despliegue MVP (Vercel o similar).
