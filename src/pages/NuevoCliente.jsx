@@ -10,6 +10,7 @@ import { getPlanes } from "../services/planes";
 import { createCliente, getClienteByDni } from "../services/clientes";
 import { createMembresia } from "../services/membresias";
 import { registrarPago } from "../services/pagos";
+import { ModalConfirmacion } from "../components/ModalConfirmacion";
 import {
   sanitizarTexto, sanitizarNumero, sanitizarCi,
   validarNombre, validarTelefono, validarEmail, validarCi,
@@ -50,7 +51,8 @@ export default function NuevoCliente() {
   const [planIdRaw, setPlanIdRaw] = useState("");
   const [titular, setTitular] = useState({ nombre: "", apellidos: "", telefono: "", email: "", dni: "" });
   const [miembrosAdicionales, setMiembrosAdicionales] = useState([MIEMBRO_VACIO(), MIEMBRO_VACIO()]);
-  const [pagoAlDia, setPagoAlDia] = useState(true);
+  const [pagoAlDia, setPagoAlDia] = useState(false);
+  const [confirmarPago, setConfirmarPago] = useState(false);
   const [metodoPago, setMetodoPago] = useState("efectivo");
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState(null);
@@ -419,7 +421,10 @@ export default function NuevoCliente() {
               <input
                 type="checkbox"
                 checked={pagoAlDia}
-                onChange={(e) => setPagoAlDia(e.target.checked)}
+                onChange={(e) => {
+                  if (e.target.checked) setConfirmarPago(true);
+                  else setPagoAlDia(false);
+                }}
                 className="w-5 h-5 accent-[#1a6b32] rounded cursor-pointer"
               />
               <span className="text-sm font-semibold text-gray-800">
@@ -461,6 +466,17 @@ export default function NuevoCliente() {
           </FormSection>
         )}
       </form>
+
+      {confirmarPago && (
+        <ModalConfirmacion
+          titulo="Confirmar pago recibido"
+          mensaje="¿Confirmas que el cliente pagó la membresía en este momento? Esta acción registrará el pago en el sistema."
+          textoConfirmar="Sí, pago confirmado"
+          variante="primary"
+          onConfirmar={() => { setPagoAlDia(true); setConfirmarPago(false); }}
+          onCancelar={() => setConfirmarPago(false)}
+        />
+      )}
     </div>
   );
 }
