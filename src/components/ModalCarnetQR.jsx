@@ -4,7 +4,7 @@ import { Download, Printer, QrCode } from "lucide-react";
 import { Modal } from "./Modal";
 
 export function ModalCarnetQR({ cliente, membresia, onClose }) {
-  const cardRef = useRef(null);
+  const qrContainerRef = useRef(null);
 
   if (!cliente) return null;
 
@@ -15,7 +15,8 @@ export function ModalCarnetQR({ cliente, membresia, onClose }) {
 
   // Función para descargar el QR como archivo SVG / PNG
   const handleDownload = () => {
-    const svgElement = cardRef.current?.querySelector("svg");
+    // Seleccionar específicamente el SVG dentro del contenedor del código QR
+    const svgElement = qrContainerRef.current?.querySelector("svg");
     if (!svgElement) return;
 
     const svgData = new XMLSerializer().serializeToString(svgElement);
@@ -36,10 +37,11 @@ export function ModalCarnetQR({ cliente, membresia, onClose }) {
       const png = canvas.toDataURL("image/png");
       const downloadLink = document.createElement("a");
       downloadLink.href = png;
-      downloadLink.download = `Carnet-QR-${cliente.nombre}-${codigo}.png`;
+      downloadLink.download = `Carnet-QR-${cliente.nombre.replace(/\s+/g, "_")}-${codigo}.png`;
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);
+      URL.revokeObjectURL(blobURL);
     };
     image.src = blobURL;
   };
@@ -53,7 +55,6 @@ export function ModalCarnetQR({ cliente, membresia, onClose }) {
       <div className="space-y-6 text-center">
         {/* Tarjeta Visual del Carnet */}
         <div
-          ref={cardRef}
           className="bg-gradient-to-br from-[#1a6b32] to-[#0f441f] text-white p-6 rounded-2xl shadow-lg space-y-4 relative overflow-hidden"
         >
           {/* Marca de agua / Encabezado */}
@@ -69,8 +70,8 @@ export function ModalCarnetQR({ cliente, membresia, onClose }) {
             </span>
           </div>
 
-          {/* Código QR Generado */}
-          <div className="bg-white p-4 rounded-xl inline-block shadow-md">
+          {/* Código QR Generado (Contenedor con ref dedicada) */}
+          <div ref={qrContainerRef} className="bg-white p-4 rounded-xl inline-block shadow-md">
             <QRCodeSVG
               value={codigo}
               size={180}
