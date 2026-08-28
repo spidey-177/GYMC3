@@ -248,7 +248,7 @@ export default function NuevoCliente() {
         });
       }
 
-      navigate("/clientes");
+      navigate(`/clientes/${titularCreado.id}`);
     } catch (err) {
       setError(err.message ?? "Ocurrió un error al guardar. Intenta de nuevo.");
     } finally {

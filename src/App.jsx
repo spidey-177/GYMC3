@@ -10,6 +10,7 @@ import ClientePerfil from "./pages/ClientePerfil";
 import Planes from "./pages/Planes";
 import NuevoPlan from "./pages/NuevoPlan";
 import Asistencia from "./pages/Asistencia";
+import Kiosk from "./pages/Kiosk";
 
 export default function App() {
   return (
@@ -20,6 +21,9 @@ export default function App() {
 
         {/* Rutas protegidas: ProtectedRoute verifica sesión antes de renderizar */}
         <Route element={<ProtectedRoute />}>
+          {/* Modo Kiosco independiente a pantalla completa */}
+          <Route path="/kiosk" element={<Kiosk />} />
+
           <Route path="/" element={<MainLayout />}>
             <Route index element={<Navigate to="/recepcion" replace />} />
             <Route path="dashboard" element={<Dashboard />} />

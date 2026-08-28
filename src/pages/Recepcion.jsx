@@ -10,6 +10,7 @@ import {
   Calendar,
   Clock,
   CreditCard,
+  Sparkles,
 } from "lucide-react";
 import { processAccess } from "../services/asistencias";
 
@@ -123,6 +124,16 @@ export default function Recepcion() {
         <div>
           <h1 className="text-3xl font-bold text-[#1a6b32]">Control de Acceso</h1>
           <p className="text-gray-500 mt-1">Escanea o ingresa el código del cliente.</p>
+          <div className="mt-3 flex justify-center">
+            <button
+              type="button"
+              onClick={() => navigate("/kiosk")}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-md border border-slate-700"
+            >
+              <Sparkles size={16} className="text-[#39FF14]" />
+              Abrir Modo Kiosco Autoservicio (Totem Entrada)
+            </button>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="max-w-md mx-auto">

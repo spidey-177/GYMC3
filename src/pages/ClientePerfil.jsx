@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   User, Phone, Mail, Hash, Calendar, Clock, CreditCard,
   Edit, Trash2, Save, DollarSign, Dumbbell, Users,
-  ShieldOff, ShieldCheck,
+  ShieldOff, ShieldCheck, QrCode,
 } from "lucide-react";
 import { Button } from "../ui/Button";
 import { Badge } from "../ui/Badge";
@@ -12,6 +12,7 @@ import { Select } from "../ui/Select";
 import { PageHeader } from "../components/PageHeader";
 import { Modal } from "../components/Modal";
 import { ModalConfirmacion } from "../components/ModalConfirmacion";
+import { ModalCarnetQR } from "../components/ModalCarnetQR";
 import { getClienteById, updateCliente, updateEstadoCuenta, getClienteByDni, deleteCliente } from "../services/clientes";
 import {
   sanitizarTexto, sanitizarNumero, sanitizarCi,
@@ -702,6 +703,13 @@ export default function ClientePerfil() {
           }}
         />
       )}
+      {modalAbierto === "carnetQR" && (
+        <ModalCarnetQR
+          cliente={cliente}
+          membresia={membresia}
+          onClose={() => setModalAbierto(null)}
+        />
+      )}
       {modalAbierto === "confirmarBaja" && (
         <ModalConfirmacion
           titulo="Dar de baja al cliente"
@@ -740,6 +748,9 @@ export default function ClientePerfil() {
             {toggleError && (
               <span className="text-xs text-red-500 font-medium mr-2">{toggleError}</span>
             )}
+            <Button variant="primary" className="bg-[#1a6b32] hover:bg-[#145327]" onClick={() => setModalAbierto("carnetQR")}>
+              <QrCode size={18} /> Ver Carnet QR
+            </Button>
             <Button variant="outline" onClick={() => setModalAbierto("editarPerfil")}>
               <Edit size={18} /> Editar Perfil
             </Button>
