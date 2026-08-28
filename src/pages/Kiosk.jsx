@@ -2,11 +2,11 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 import {
   CheckCircle2, XCircle, AlertTriangle, ShieldOff,
-  Maximize2, Minimize2, SwitchCamera, RefreshCw, Volume2, Sparkles, Home
+  Maximize2, Minimize2, SwitchCamera, RefreshCw, Sparkles, Home, Play
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { processAccess } from "../services/asistencias";
-import { playSuccessSound, playErrorSound } from "../utils/audio";
+import { playSuccessSound, playErrorSound, initAudio } from "../utils/audio";
 
 const CONFIG_MOTIVOS = {
   denegado_vencido: {
@@ -52,17 +52,26 @@ const CONFIG_MOTIVOS = {
 };
 
 export default function Kiosk() {
-  const [scanning, setScanning] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [resultado, setResultado] = useState(null);
-  const [cameraFacingMode, setCameraFacingMode] = useState("environment"); // "user" or "environment"
+  const [cameraFacingMode, setCameraFacingMode] = useState("environment");
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
 
   const scannerRef = useRef(null);
   const wakeLockRef = useRef(null);
   const timerRef = useRef(null);
 
-  // Solicitar Wake Lock para que la pantalla del dispositivo nunca se apague
+  // Bandera sincrónica para evitar ráfagas de cuadros simultáneos en milisegundos
+  const isProcessingRef = useRef(false);
+
+  // Habilitar audio al primer toque/clic en cualquier parte de la pantalla
+  const handleUserGesture = () => {
+    initAudio();
+    if (!audioUnlocked) setAudioUnlocked(true);
+  };
+
+  // Solicitar Wake Lock para que la pantalla del celular/tablet nunca se apague
   useEffect(() => {
     async function requestWakeLock() {
       try {
@@ -82,17 +91,14 @@ export default function Kiosk() {
     };
   }, []);
 
-  // Función encargada de validar el código escaneado
+  // Función encargada de validar el código escaneado (Robusta y protegida contra ráfagas)
   const handleCodeScanned = useCallback(async (code) => {
-    if (processing) return;
+    // Bloqueo sincrónico instantáneo (0ms)
+    if (isProcessingRef.current) return;
+    isProcessingRef.current = true;
     setProcessing(true);
 
     try {
-      // Detener temporalmente el lector de cámara
-      if (scannerRef.current && scannerRef.current.isScanning) {
-        await scannerRef.current.pause(true);
-      }
-
       const res = await processAccess(code.trim());
 
       if (res?.acceso_concedido) {
@@ -106,33 +112,25 @@ export default function Kiosk() {
         setResultado({ tipo: "denegado", motivo: "no_encontrado", datos: null });
       }
 
-      // Reiniciar escáner después de 3.5 segundos
+      // Reanudar recepción de nuevos escaneos tras 3.5 segundos
       timerRef.current = setTimeout(() => {
         setResultado(null);
         setProcessing(false);
-        if (scannerRef.current) {
-          try {
-            scannerRef.current.resume();
-          } catch (e) {
-            console.warn("Error al reanudar cámara:", e);
-          }
-        }
+        isProcessingRef.current = false;
       }, 3500);
     } catch (err) {
-      console.error("Error al procesar acceso:", err);
+      console.error("Error al procesar acceso en kiosco:", err);
       playErrorSound();
       setResultado({ tipo: "denegado", motivo: "no_encontrado", datos: null });
       timerRef.current = setTimeout(() => {
         setResultado(null);
         setProcessing(false);
-        if (scannerRef.current) {
-          try { scannerRef.current.resume(); } catch (e) {}
-        }
+        isProcessingRef.current = false;
       }, 3000);
     }
-  }, [processing]);
+  }, []);
 
-  // Inicializar o reiniciar la cámara de html5-qrcode
+  // Inicializar el visor de cámara de html5-qrcode sin interrupciones
   useEffect(() => {
     let html5QrcodeScanner = null;
 
@@ -154,13 +152,10 @@ export default function Kiosk() {
           (decodedText) => {
             handleCodeScanned(decodedText);
           },
-          () => {} // Ignorar errores de frame parcial
+          () => {} // Ignorar errores de escaneo de frame parcial
         );
-
-        setScanning(true);
       } catch (err) {
         console.error("Error iniciando cámara Kiosco:", err);
-        setScanning(false);
       }
     }
 
@@ -185,6 +180,7 @@ export default function Kiosk() {
 
   // Alternar modo pantalla completa
   const toggleFullscreen = () => {
+    handleUserGesture();
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {});
     } else {
@@ -198,7 +194,10 @@ export default function Kiosk() {
   const planNombre = membresia?.plan?.nombre || "Membresía Activa";
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col justify-between select-none relative overflow-hidden font-sans">
+    <div
+      onClick={handleUserGesture}
+      className="min-h-screen bg-slate-950 text-white flex flex-col justify-between select-none relative overflow-hidden font-sans"
+    >
       {/* Barra Superior con Controles */}
       <header className="p-4 flex items-center justify-between bg-slate-900/80 backdrop-blur-md border-b border-slate-800 z-20">
         <div className="flex items-center gap-3">
@@ -331,10 +330,20 @@ export default function Kiosk() {
             )}
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-800/80 px-4 py-2 rounded-full border border-slate-700/50">
-            <Volume2 size={16} className="text-[#39FF14]" />
-            <span>Verificación con señal auditiva activa</span>
-          </div>
+          {!audioUnlocked ? (
+            <button
+              onClick={handleUserGesture}
+              className="flex items-center gap-2 text-xs text-amber-300 bg-amber-950/60 border border-amber-500/40 px-4 py-2 rounded-full font-semibold animate-pulse cursor-pointer hover:bg-amber-900/60"
+            >
+              <Play size={14} />
+              <span>Tocar aquí para activar alertas de audio</span>
+            </button>
+          ) : (
+            <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-800/80 px-4 py-2 rounded-full border border-slate-700/50">
+              <span className="w-2 h-2 rounded-full bg-[#39FF14] animate-ping" />
+              <span>Audio activado · Buscando código...</span>
+            </div>
+          )}
         </div>
       </main>
 

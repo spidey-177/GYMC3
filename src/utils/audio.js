@@ -3,16 +3,24 @@
 
 let audioCtx = null;
 
-function getAudioContext() {
-  if (!audioCtx) {
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (AudioContextClass) {
-      audioCtx = new AudioContextClass();
+export function initAudio() {
+  try {
+    if (!audioCtx) {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioContextClass) {
+        audioCtx = new AudioContextClass();
+      }
     }
+    if (audioCtx && audioCtx.state === "suspended") {
+      audioCtx.resume().catch(() => {});
+    }
+  } catch (e) {
+    console.warn("Audio Context init error:", e);
   }
-  if (audioCtx && audioCtx.state === "suspended") {
-    audioCtx.resume();
-  }
+}
+
+function getAudioContext() {
+  initAudio();
   return audioCtx;
 }
 
@@ -22,7 +30,7 @@ function getAudioContext() {
 export function playSuccessSound() {
   try {
     const ctx = getAudioContext();
-    if (!ctx) return;
+    if (!ctx || ctx.state !== "running") return;
 
     const now = ctx.currentTime;
 
@@ -60,7 +68,7 @@ export function playSuccessSound() {
 export function playErrorSound() {
   try {
     const ctx = getAudioContext();
-    if (!ctx) return;
+    if (!ctx || ctx.state !== "running") return;
 
     const now = ctx.currentTime;
 
