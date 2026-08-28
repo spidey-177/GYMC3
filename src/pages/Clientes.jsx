@@ -54,9 +54,7 @@ export default function Clientes() {
   useEffect(() => {
     if (!verEliminados || eliminados.length > 0) return;
     getClientesEliminados().then(setEliminados).catch((err) => setError(err.message));
-  }, [verEliminados]);
-
-  useEffect(() => { setPagina(1); }, [busqueda, filtroEstado, filtroPlan, filtroVencimiento, verEliminados]);
+  }, [verEliminados, eliminados.length]);
 
   const handleReactivar = async (id) => {
     setReactivando(id);
@@ -125,13 +123,13 @@ export default function Clientes() {
             icon={Search}
             placeholder="Buscar por nombre, apellido, código o CI..."
             value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
+            onChange={(e) => { setBusqueda(e.target.value); setPagina(1); }}
           />
         </div>
         <div className="flex gap-2 flex-wrap">
           <select
             value={filtroEstado}
-            onChange={(e) => setFiltroEstado(e.target.value)}
+            onChange={(e) => { setFiltroEstado(e.target.value); setPagina(1); }}
             className="px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-[#39FF14] outline-none bg-white text-gray-700 font-medium"
           >
             <option value="">Todos los estados</option>
@@ -140,7 +138,7 @@ export default function Clientes() {
           </select>
           <select
             value={filtroPlan}
-            onChange={(e) => setFiltroPlan(e.target.value)}
+            onChange={(e) => { setFiltroPlan(e.target.value); setPagina(1); }}
             className="px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-[#39FF14] outline-none bg-white text-gray-700 font-medium"
           >
             <option value="">Todos los planes</option>
@@ -227,7 +225,52 @@ export default function Clientes() {
 
           {!loading && !error && (
             <>
-              <div className="overflow-x-auto">
+              {/* Vista Móvil (Tarjetas independientes, sin scroll horizontal) */}
+              <div className="block md:hidden p-4 space-y-3">
+                {clientesPagina.length === 0 ? (
+                  <p className="text-center text-gray-400 py-8 text-sm">No se encontraron clientes.</p>
+                ) : (
+                  clientesPagina.map((cliente) => (
+                    <div
+                      key={cliente.id}
+                      className="p-4 bg-gray-50/60 border border-gray-200 rounded-2xl space-y-3 shadow-sm"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-xs bg-white border border-gray-200 px-2.5 py-1 rounded-lg text-gray-700 font-bold">
+                          {cliente.codigo_unico}
+                        </span>
+                        <Badge variant={cliente.estado_cuenta === "activo" ? "green" : "red"}>
+                          {cliente.estado_cuenta.toUpperCase()}
+                        </Badge>
+                      </div>
+
+                      <div>
+                        <h3 className="font-bold text-gray-900 text-base">
+                          {cliente.nombre} {cliente.apellidos}
+                        </h3>
+                        {cliente.dni && (
+                          <p className="text-xs text-gray-400">CI: {cliente.dni}</p>
+                        )}
+                        <div className="mt-2 text-xs text-gray-600 space-y-1">
+                          <p>Plan: <strong className="text-gray-900">{cliente.membresia_actual?.plan?.nombre ?? "Sin plan registrado"}</strong></p>
+                          <p>Teléfono: <strong className="text-gray-900">{cliente.telefono}</strong></p>
+                        </div>
+                      </div>
+
+                      <Button
+                        variant="secondary"
+                        onClick={() => navigate(`/clientes/${cliente.id}`)}
+                        className="w-full justify-center text-sm py-2 mt-1"
+                      >
+                        Ver Perfil
+                      </Button>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Vista Desktop (Tabla tradicional) */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-gray-50 text-gray-600 text-sm border-b border-gray-200">

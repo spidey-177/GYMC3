@@ -86,8 +86,9 @@ export async function getClientesConPlan() {
   return data.map((cliente) => {
     const membresiaActual = (cliente.membresias ?? [])
       .sort((a, b) => new Date(b.fecha_fin) - new Date(a.fecha_fin))[0] ?? null;
-    const { membresias: _, ...resto } = cliente;
-    return { ...resto, membresia_actual: membresiaActual };
+    const clienteCopia = { ...cliente, membresia_actual: membresiaActual };
+    delete clienteCopia.membresias;
+    return clienteCopia;
   });
 }
 
@@ -136,8 +137,9 @@ export async function getClientesEliminados() {
   return data.map((cliente) => {
     const ultimaMembresia = (cliente.membresias ?? [])
       .sort((a, b) => new Date(b.fecha_fin) - new Date(a.fecha_fin))[0] ?? null;
-    const { membresias: _, ...resto } = cliente;
-    return { ...resto, membresia_actual: ultimaMembresia };
+    const clienteCopia = { ...cliente, membresia_actual: ultimaMembresia };
+    delete clienteCopia.membresias;
+    return clienteCopia;
   });
 }
 

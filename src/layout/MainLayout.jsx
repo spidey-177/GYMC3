@@ -109,9 +109,29 @@ export default function MainLayout() {
           <span className="font-bold text-[#1a6b32] text-lg">GymC3</span>
         </header>
 
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto pb-20 lg:pb-0">
           <Outlet />
         </main>
+
+        {/* ── BARRA DE NAVEGACIÓN INFERIOR (Solo Móviles / Tablets) ── */}
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 flex items-center justify-around px-2 py-2 shadow-lg">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                `flex flex-col items-center gap-1 px-3 py-1 rounded-xl text-xs transition-all ${
+                  isActive
+                    ? "text-[#1a6b32] font-bold"
+                    : "text-gray-500 hover:text-gray-800"
+                }`
+              }
+            >
+              {item.icon}
+              <span className="text-[11px] font-medium">{item.label}</span>
+            </NavLink>
+          ))}
+        </nav>
       </div>
     </div>
   );

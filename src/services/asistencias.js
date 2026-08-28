@@ -90,7 +90,7 @@ export async function getAsistenciasByCliente(clienteId, limit = 15) {
 }
 
 // Inserta un registro de asistencia en la tabla
-async function registrarAsistencia(clienteId, estadoAcceso) {
+export async function registrarAsistencia(clienteId, estadoAcceso) {
   const { error } = await supabase
     .from("asistencias")
     .insert({ cliente_id: clienteId, estado_acceso: estadoAcceso });

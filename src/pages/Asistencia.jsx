@@ -60,8 +60,6 @@ export default function Asistencia() {
   // Refetch cuando cambia el período o el orden (ambos afectan la query a Supabase)
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    setError(null);
 
     const { desde, hasta } = getRango(filtroFecha);
     getAsistencias({ desde, hasta, ordenAsc })
@@ -71,9 +69,6 @@ export default function Asistencia() {
 
     return () => { cancelled = true; };
   }, [filtroFecha, ordenAsc]);
-
-  // Volver a página 1 cuando cambia cualquier filtro
-  useEffect(() => { setPagina(1); }, [filtroFecha, searchTerm, filtroEstado, ordenAsc]);
 
   // Filtros client-side: búsqueda por texto + estado de acceso
   const registrosFiltrados = asistencias.filter((r) => {
@@ -108,11 +103,15 @@ export default function Asistencia() {
             icon={Search}
             placeholder="Buscar por nombre o código..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => { setSearchTerm(e.target.value); setPagina(1); }}
           />
         </div>
         <div className="w-full md:w-44">
-          <Select icon={Calendar} value={filtroFecha} onChange={(e) => setFiltroFecha(e.target.value)}>
+          <Select
+            icon={Calendar}
+            value={filtroFecha}
+            onChange={(e) => { setFiltroFecha(e.target.value); setPagina(1); setLoading(true); }}
+          >
             <option value="hoy">Hoy</option>
             <option value="ayer">Ayer</option>
             <option value="semana">Últimos 7 días</option>
@@ -120,7 +119,10 @@ export default function Asistencia() {
           </Select>
         </div>
         <div className="w-full md:w-52">
-          <Select value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)}>
+          <Select
+            value={filtroEstado}
+            onChange={(e) => { setFiltroEstado(e.target.value); setPagina(1); }}
+          >
             {ESTADO_OPCIONES.map((o) => (
               <option key={o.value} value={o.value}>{o.label}</option>
             ))}
@@ -128,7 +130,7 @@ export default function Asistencia() {
         </div>
         <Button
           variant={ordenAsc ? "secondary" : "outline"}
-          onClick={() => setOrdenAsc((v) => !v)}
+          onClick={() => { setOrdenAsc((v) => !v); setPagina(1); setLoading(true); }}
           title={ordenAsc ? "Mostrando más antiguos primero" : "Mostrando más recientes primero"}
           className="shrink-0"
         >
@@ -143,7 +145,44 @@ export default function Asistencia() {
 
         {!loading && !error && (
           <>
-            <div className="overflow-x-auto">
+            {/* Vista Móvil (Tarjetas independientes de asistencias) */}
+            <div className="block md:hidden p-4 space-y-3">
+              {registrosPagina.length === 0 ? (
+                <p className="text-center text-gray-400 py-8 text-sm">No hay registros para este período.</p>
+              ) : (
+                registrosPagina.map((registro) => {
+                  const { fecha, hora } = formatFechaHora(registro.fecha_hora);
+                  return (
+                    <div
+                      key={registro.id}
+                      className="p-4 bg-gray-50/60 border border-gray-200 rounded-2xl space-y-2.5 shadow-sm"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="text-xs text-gray-500 font-medium">
+                          <span>{fecha}</span> · <strong className="text-gray-800">{hora}</strong>
+                        </div>
+                        <AccesoEstadoBadge estado={registro.estado_acceso} />
+                      </div>
+
+                      <div>
+                        <h3 className="font-bold text-gray-900 text-base">
+                          {registro.cliente?.nombre} {registro.cliente?.apellidos}
+                        </h3>
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-gray-600 mt-1">
+                          <span className="font-mono bg-white px-2 py-0.5 rounded border border-gray-200 font-bold text-gray-700">
+                            {registro.cliente?.codigo_unico}
+                          </span>
+                          <span>Plan: <strong>{registro.cliente?.plan_nombre ?? "—"}</strong></span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Vista Desktop (Tabla tradicional) */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left text-sm whitespace-nowrap">
                 <thead className="bg-gray-50 border-b border-gray-200 text-gray-600 font-semibold">
                   <tr>
